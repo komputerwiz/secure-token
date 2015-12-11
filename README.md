@@ -22,11 +22,17 @@ Available encryption methods are:
 
 I will try to implement more as PHP cryptography improves (e.g. once [AES 256 GCM][] is supported). Feel free to implement your own and submit a pull request, too!
 
+Available Decorators:
+
+* **Komputerwiz\\Security\\Token\\SecureToken\\ExpiringSecureToken** - tokens become invalid (and trigger `TokenException`s on decode) after a set interval
+* **Komputerwiz\\Security\\Token\\SecureToken\\TimestampedSecureToken** - record a timestamp of when the token was issued. Retrieve this timestamp with the `getTimestamp($token)` instance method.
+
 ```php
 <?php
 
 use Komputerwiz\Security\Token\SecureToken\Aes256CbcSha256SecureToken;
 use Komputerwiz\Security\Token\SecureToken\ExpiringSecureToken;
+use Komputerwiz\Security\Token\SecureToken\TimestampedSecureToken;
 use Komputerwiz\Security\Token\SecureToken\TokenException;
 
 // helper PBKDF2 method for deriving a key from a secret; not required, but recommended
@@ -38,7 +44,10 @@ $token = new Aes256CbcSha256SecureToken($encryptionKey, $signingKey);
 
 
 // optionally wrap it in an ExpiringSecureToken so that it will not be accepted after a set interval
-$token = new ExpiringSecureToken($token);
+$token = new ExpiringSecureToken($token, new \DateInterval('P1D'));
+
+// record issue dates of tokens
+$token = new TimestampedSecureToken($token);
 
 
 $data = 'set your super secret data here';
@@ -53,6 +62,10 @@ try {
 } catch (TokenException $e) {
     // token was either tampered with or expired
 }
+
+
+// get token creation timestamp (if $token instanceof TimestampedSecureToken)
+$issued = $token->getTimestamp($binaryToken);
 ```
 
 ## Implementing Your Own SecureToken
