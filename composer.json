@@ -4,7 +4,7 @@
     "description": "Cryptographically secure encoded tokens",
     "keywords": ["cryptography", "security", "token"],
     "homepage": "https://github.com/komputerwiz/secure-token",
-    "license": "Apache 2.0",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Matthew Barry",
